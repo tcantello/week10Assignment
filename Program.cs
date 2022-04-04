@@ -38,23 +38,37 @@ namespace week10Assignment
             Console.WriteLine();
         }
     }
-    interface ITurn
+    interface IPlayerTurn
     {
-        void TakeAction(int choice);
+        int TakeAction();
+    }
+    interface IEnemyTurn
+    {
+        int ETakeAction();
     }
     interface IHealth
     {
-        void Health();
+        int Health();
     }
-    public class Attack : IHealth, ITurn
+    public class Attack : IHealth, IPlayerTurn, IEnemyTurn
     {
-        public void TakeAction(int choice)
+        public int TakeAction()
         {
-            Console.WriteLine("test");
+            int playerDamageGiven = Fighter.random.Next(0, 5);
+            Console.WriteLine("You gave the enemy " + playerDamageGiven + " points of damage.");
+            return playerDamageGiven;
         }
-        public void Health()
+        public int ETakeAction()
         {
-        Console.WriteLine("test");
+            int enemyDamageGiven = Fighter.random.Next(0, 5);
+            Console.WriteLine("The enemy gave you " + enemyDamageGiven + " points of damage.");
+            return enemyDamageGiven;
+        }
+        public int Health()
+        {
+            int playerHealth = Fighter.random.Next(5, 20);
+            Console.WriteLine("You healed " + playerHealth + " points of damage.");
+            return playerHealth;
         }
     }
     class Enemy : Fighter
@@ -73,22 +87,24 @@ namespace week10Assignment
     }
     class Program
     {
-        public void Rules()
+        public static void Rules()
         {
             Console.WriteLine("The Rules:");
             Console.WriteLine();
-            Console.WriteLine("This is you against the enemy. First one to run out of health will be declared dead and the other player will be declared the winner." +
-                "Both players will start out with 20 units of health. You as the player will have 3 chances to replish your health with the use of potions. The use of " +
-                "a potion will result in the loss of an attack. The potion will restore anywhere from 5 to 20 units of health each time it is used. However the use of " +
-                "a potion will not result in your health going above 20 units. An attack will result in anywhere from 0 to 5 units of damage. The enemy will always " +
-                "attack each turn.");
+            Console.WriteLine("This is you against the enemy. Each round will consist of the Player either attacking or healing and the enemy attacking. First one to run " +
+                "out of health will be declared dead and the other player will be declared the winner. Both players will start out with 20 units of health. You as the " +
+                "player will have 3 chances to replish your health with the use of potions. The use of a potion will result in the loss of an attack. The potion will " +
+                "restore anywhere from 5 to 20 units of health each time it is used. However the use of a potion will not result in your health going above 20 units. An " +
+                "attack will result in anywhere from 0 to 5 units of damage. The enemy will always attack.");
             Console.WriteLine();
             Console.WriteLine();
         }
         static void Main(string[] args)
         {
             int roundCounter = 1;
-            int userInput = 0;
+            int playerCurrentHealth = 20;
+            int enemyCurrentHealth = 20;
+            int playerPotion = 3;
                 
             Console.WriteLine("WELCOME TO THE COMBAT ARENA!!");
             Console.WriteLine();
@@ -98,11 +114,8 @@ namespace week10Assignment
             Attack ap1 = new Attack();
             Attack ap2 = new Attack();
             p1.PrintWelcome();
-            Program instructions = new Program();
-            instructions.Rules();
+            Rules();
             
-
-
             do          
             {
                 Console.WriteLine();
@@ -110,19 +123,53 @@ namespace week10Assignment
                 Console.WriteLine("Round: " + roundCounter);
                 Console.WriteLine("**********************************************");
                 Console.WriteLine();
-                Console.WriteLine(p1.Name + ": " + " health units.");
-                Console.WriteLine(p2.Name + ": " + " health units.");
+                Console.WriteLine(p1.Name + ": " + playerCurrentHealth + " health units.");
+                Console.WriteLine(p2.Name + ": " + enemyCurrentHealth + " health units.");
                 Console.WriteLine();
                 Console.WriteLine(p1.Name + " , what would you like to do");
                 Console.WriteLine("1 - Attack?");
-                Console.WriteLine("2 - Heal by drinking a potion?");
-                userInput = Convert.ToInt32(Console.ReadLine());
-                ap1.TakeAction(userInput);
-                ap2.TakeAction(1);
-                ap1.Health();
-                ap2.Health();
+                if (playerPotion > 0)
+                {
+                    Console.WriteLine("2 - Heal by drinking a potion?  You have " + playerPotion + " potions left");
+                }
+                else
+                {
+                    Console.WriteLine("You have no potions left and can only attack.");
+                }
+                int userInput = Convert.ToInt32(Console.ReadLine());
+                if (userInput == 1)
+                {
+                    playerCurrentHealth -= ap2.ETakeAction();
+                    enemyCurrentHealth -= ap1.TakeAction();
+                }
+                else if (userInput == 2)
+                {
+                    playerCurrentHealth += ap1.Health() - ap2.ETakeAction();
+                    playerPotion--;
+                }
+                else
+                {
+                        Console.WriteLine("You did not enter 1 or 2");
+              }
                 roundCounter++;
-            }while (true);
+            } while (playerCurrentHealth > 0 && enemyCurrentHealth >0);
+
+            if (playerCurrentHealth <=0 && enemyCurrentHealth >0)
+            {
+                Console.WriteLine();
+                Console.WriteLine();
+                Console.WriteLine("RIP " + p1.Name + " your a dead! Better Luck next time");
+            }
+            else if (enemyCurrentHealth <=0 && playerCurrentHealth >0)
+            {
+                Console.WriteLine();
+                Console.WriteLine();
+                Console.WriteLine("Congrats " + p1.Name + " your the winner! You defeated your enemy in " + (roundCounter - 1) + " rounds.");
+            }
+            else
+            {
+                Console.WriteLine("DRAW!!! " + p1.Name + " you and the enemy are both died!");
+            }
         }
     }
 }
