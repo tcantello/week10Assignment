@@ -2,19 +2,20 @@
 Program - week10Assignment
 Programer - Toby Cantello
 Date Created - 4/1/2022
-Last Date Updated - 4/2/2022
+Last Date Updated - 4/4/2022
 */
 
 using System;
 
 namespace week10Assignment
 {
+
+    // Main player class
     class Fighter
     {
         public static Random random = new Random();
 
         string name;
-        public bool dead = true;
 
         public Fighter(string n)
         {
@@ -38,6 +39,7 @@ namespace week10Assignment
             Console.WriteLine();
         }
     }
+    // Take Action and Healing Random number generator section
     interface IPlayerTurn
     {
         int TakeAction();
@@ -71,6 +73,7 @@ namespace week10Assignment
             return playerHealth;
         }
     }
+    // Names of the players
     class Enemy : Fighter
     {
         public Enemy(string n) : base(n)
@@ -87,6 +90,7 @@ namespace week10Assignment
     }
     class Program
     {
+        // Game Rules
         public static void Rules()
         {
             Console.WriteLine("The Rules:");
@@ -99,12 +103,11 @@ namespace week10Assignment
             Console.WriteLine();
             Console.WriteLine();
         }
+        // Main Program Below
         static void Main(string[] args)
-        {
-            int roundCounter = 1;
-            int playerCurrentHealth = 20;
-            int enemyCurrentHealth = 20;
-            int playerPotion = 3;
+        { 
+            int userInput;
+            int playAgain;
                 
             Console.WriteLine("WELCOME TO THE COMBAT ARENA!!");
             Console.WriteLine();
@@ -115,62 +118,85 @@ namespace week10Assignment
             Attack ap2 = new Attack();
             p1.PrintWelcome();
             Rules();
-            
-            do          
+            do
             {
-                Console.WriteLine();
-                Console.WriteLine("**********************************************");
-                Console.WriteLine("Round: " + roundCounter);
-                Console.WriteLine("**********************************************");
-                Console.WriteLine();
-                Console.WriteLine(p1.Name + ": " + playerCurrentHealth + " health units.");
-                Console.WriteLine(p2.Name + ": " + enemyCurrentHealth + " health units.");
-                Console.WriteLine();
-                Console.WriteLine(p1.Name + " , what would you like to do");
-                Console.WriteLine("1 - Attack?");
-                if (playerPotion > 0)
+                int roundCounter = 1;
+                int playerCurrentHealth = 20;
+                int enemyCurrentHealth = 20;
+                int playerPotion = 3;
+                do
                 {
-                    Console.WriteLine("2 - Heal by drinking a potion?  You have " + playerPotion + " potions left");
-                }
-                else
-                {
-                    Console.WriteLine("You have no potions left and can only attack.");
-                }
-                int userInput = Convert.ToInt32(Console.ReadLine());
-                if (userInput == 1)
-                {
-                    playerCurrentHealth -= ap2.ETakeAction();
-                    enemyCurrentHealth -= ap1.TakeAction();
-                }
-                else if (userInput == 2)
-                {
-                    playerCurrentHealth += ap1.Health() - ap2.ETakeAction();
-                    playerPotion--;
-                }
-                else
-                {
+                    Console.WriteLine();
+                    Console.WriteLine("**********************************************");
+                    Console.WriteLine("Round: " + roundCounter);
+                    Console.WriteLine("**********************************************");
+                    Console.WriteLine();
+                    Console.WriteLine(p1.Name + ": " + playerCurrentHealth + " health units.");
+                    Console.WriteLine(p2.Name + ": " + enemyCurrentHealth + " health units.");
+                    Console.WriteLine();
+                    Console.WriteLine(p1.Name + " , what would you like to do");
+                    Console.WriteLine("1 - Attack?");
+                    if (playerPotion > 0)
+                    {
+                        Console.WriteLine("2 - Heal by drinking a potion?  You have " + playerPotion + " potions left");
+                    }
+                    else
+                    {
+                        Console.WriteLine("You have no potions left and can only attack.");
+                    }
+                    userInput = Convert.ToInt32(Console.ReadLine());
+                    if (userInput == 1)
+                    {
+                        playerCurrentHealth -= ap2.ETakeAction();
+                        enemyCurrentHealth -= ap1.TakeAction();
+                    }
+                    else if (userInput == 2)
+                    {
+                        if ((playerCurrentHealth + ap1.Health() - ap2.ETakeAction() >= 20))
+                        {
+                            playerCurrentHealth = 20;
+                            playerPotion--;
+                        }
+                        else
+                        {
+                            playerCurrentHealth += ap1.Health() - ap2.ETakeAction();
+                            playerPotion--;
+                        }
+                    }
+                    else
+                    {
                         Console.WriteLine("You did not enter 1 or 2");
-              }
-                roundCounter++;
-            } while (playerCurrentHealth > 0 && enemyCurrentHealth >0);
+                    }
+                    roundCounter++;
+                } while (playerCurrentHealth > 0 && enemyCurrentHealth > 0);
 
-            if (playerCurrentHealth <=0 && enemyCurrentHealth >0)
-            {
+                if (playerCurrentHealth <= 0 && enemyCurrentHealth > 0)
+                {
+                    Console.WriteLine();
+                    Console.WriteLine();
+                    Console.WriteLine("RIP " + p1.Name + " your dead! Better Luck next time");
+                }
+                else if (enemyCurrentHealth <= 0 && playerCurrentHealth > 0)
+                {
+                    Console.WriteLine();
+                    Console.WriteLine();
+                    Console.WriteLine("Congrats " + p1.Name + " your the winner! You defeated your enemy in " + (roundCounter - 1) + " rounds.");
+                }
+                else
+                {
+                    Console.WriteLine("DRAW!!! " + p1.Name + " you and the enemy are both died!");
+                }
                 Console.WriteLine();
                 Console.WriteLine();
-                Console.WriteLine("RIP " + p1.Name + " your a dead! Better Luck next time");
-            }
-            else if (enemyCurrentHealth <=0 && playerCurrentHealth >0)
-            {
+                Console.WriteLine("Would like to play again?");
                 Console.WriteLine();
-                Console.WriteLine();
-                Console.WriteLine("Congrats " + p1.Name + " your the winner! You defeated your enemy in " + (roundCounter - 1) + " rounds.");
-            }
-            else
-            {
-                Console.WriteLine("DRAW!!! " + p1.Name + " you and the enemy are both died!");
-            }
+                Console.WriteLine("Press 1 to play the game again.");
+                Console.WriteLine("Press any other key to quit playing.");
+                playAgain = Convert.ToInt32(Console.ReadLine());
+            } while (playAgain == 1);
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine("Thanks for Playing! See you again soon!");
         }
     }
 }
- 
