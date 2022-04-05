@@ -2,7 +2,7 @@
 Program - week10Assignment
 Programer - Toby Cantello
 Date Created - 4/1/2022
-Last Date Updated - 4/4/2022
+Last Date Updated - 4/5/2022
 */
 
 using System;
@@ -54,9 +54,10 @@ namespace week10Assignment
     }
     public class Attack : IHealth, IPlayerTurn, IEnemyTurn
     {
-        public int TakeAction()
+        public int TakeAction( )
         {
             int playerDamageGiven = Fighter.random.Next(0, 5);
+            Console.WriteLine();
             Console.WriteLine("You gave the enemy " + playerDamageGiven + " points of damage.");
             return playerDamageGiven;
         }
@@ -69,6 +70,7 @@ namespace week10Assignment
         public int Health()
         {
             int playerHealth = Fighter.random.Next(5, 20);
+            Console.WriteLine();
             Console.WriteLine("You healed " + playerHealth + " points of damage.");
             return playerHealth;
         }
@@ -103,6 +105,46 @@ namespace week10Assignment
             Console.WriteLine();
             Console.WriteLine();
         }
+
+        // Stats on who won more
+        public static void Stats(string name, int pw, int ew, int rc)
+        {
+            var p = (double)pw / (double)rc;
+            var e = (double)ew / (double)rc;
+            Console.WriteLine(name + ", you won " + pw + " rounds or " + p * 100 + "% of the " + rc + " rounds");
+            Console.WriteLine("Your enemy won " + ew + " rounds or " + e * 100 + "% of the " + rc + " rounds");
+        }
+
+        // Who was the winner
+        public static void Winner(int ph, int eh, string pn, string en, int pw, int ew, int rc)
+        {
+            if (ph <= 0 && eh > 0)
+            {
+                Console.WriteLine();
+                Console.WriteLine();
+                Console.WriteLine("RIP " + pn + " your dead! Better Luck next time");
+                Console.WriteLine();
+                Console.WriteLine();
+                Stats(pn, pw, ew, (rc - 1));
+            }
+            else if (eh <= 0 && ph > 0)
+            {
+                Console.WriteLine();
+                Console.WriteLine();
+                Console.WriteLine("Congrats " + pn + " your the winner! You defeated your enemy in " + (rc) + " rounds.");
+                Console.WriteLine();
+                Console.WriteLine();
+                Stats(pn, pw, ew, (rc - 1));
+            }
+            else
+            {
+                Console.WriteLine("DRAW!!! " + pn + " you and the enemy are both died!");
+                Console.WriteLine();
+                Console.WriteLine();
+                Stats(pn, pw, ew, (rc - 1));
+            }
+        }
+
         // Main Program Below
         static void Main(string[] args)
         { 
@@ -124,6 +166,9 @@ namespace week10Assignment
                 int playerCurrentHealth = 20;
                 int enemyCurrentHealth = 20;
                 int playerPotion = 3;
+                int playerWon = 0;
+                int enemyWon = 0;
+
                 do
                 {
                     Console.WriteLine();
@@ -146,21 +191,51 @@ namespace week10Assignment
                     }
                     userInput = Convert.ToInt32(Console.ReadLine());
                     if (userInput == 1)
-                    {
-                        playerCurrentHealth -= ap2.ETakeAction();
-                        enemyCurrentHealth -= ap1.TakeAction();
+                    { 
+                        int pdg = ap1.TakeAction();
+                        int edg = ap2.ETakeAction();
+                        playerCurrentHealth -= edg;
+                        enemyCurrentHealth -= pdg;
+                        if (pdg > edg)
+                        {
+                            Console.WriteLine();
+                            Console.WriteLine(p1.Name + " WON!!");
+                            Console.WriteLine();
+                            playerWon++;
+                        }
+                        else if (pdg < edg)
+                        {
+                            Console.WriteLine();
+                            Console.WriteLine("The " + p2.Name + " WON!!");
+                            Console.WriteLine();
+                            enemyWon++;
+                        }
+                        else
+                        {
+                            Console.WriteLine();
+                            Console.WriteLine(" DRAW!!");
+                            Console.WriteLine();
+                        }
                     }
                     else if (userInput == 2)
                     {
                         if ((playerCurrentHealth + ap1.Health() - ap2.ETakeAction() >= 20))
                         {
+                            Console.WriteLine();
+                            Console.WriteLine("The " + p2.Name + " WON!!");
+                            Console.WriteLine();
                             playerCurrentHealth = 20;
                             playerPotion--;
+                            enemyWon++;
                         }
                         else
                         {
+                            Console.WriteLine();
+                            Console.WriteLine("The " + p2.Name + " WON!!");
+                            Console.WriteLine();
                             playerCurrentHealth += ap1.Health() - ap2.ETakeAction();
                             playerPotion--;
+                            enemyWon++;
                         }
                     }
                     else
@@ -170,24 +245,8 @@ namespace week10Assignment
                     roundCounter++;
                 } while (playerCurrentHealth > 0 && enemyCurrentHealth > 0);
 
-                if (playerCurrentHealth <= 0 && enemyCurrentHealth > 0)
-                {
-                    Console.WriteLine();
-                    Console.WriteLine();
-                    Console.WriteLine("RIP " + p1.Name + " your dead! Better Luck next time");
-                }
-                else if (enemyCurrentHealth <= 0 && playerCurrentHealth > 0)
-                {
-                    Console.WriteLine();
-                    Console.WriteLine();
-                    Console.WriteLine("Congrats " + p1.Name + " your the winner! You defeated your enemy in " + (roundCounter - 1) + " rounds.");
-                }
-                else
-                {
-                    Console.WriteLine("DRAW!!! " + p1.Name + " you and the enemy are both died!");
-                }
-                Console.WriteLine();
-                Console.WriteLine();
+                Winner(playerCurrentHealth, enemyCurrentHealth, p1.Name, p2.Name, playerWon, enemyWon, roundCounter);
+
                 Console.WriteLine("Would like to play again?");
                 Console.WriteLine();
                 Console.WriteLine("Press 1 to play the game again.");
