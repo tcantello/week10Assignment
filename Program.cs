@@ -2,15 +2,14 @@
 Program - week10Assignment
 Programer - Toby Cantello
 Date Created - 4/1/2022
-Last Date Updated - 4/5/2022
+Last Date Updated - 4/6/2022
 */
 
 using System;
 
 namespace week10Assignment
 {
-
-    // Main player class
+    // Main Player Class
     class Fighter
     {
         public static Random random = new Random();
@@ -29,16 +28,17 @@ namespace week10Assignment
         public void PrintWelcome()
         {
             Console.WriteLine();
-            Console.WriteLine();
+            Console.WriteLine("**********************************************");
             Console.WriteLine("**********************************************");
             Console.WriteLine();
             Console.WriteLine("Welcome to the arena " + Name + "!" + "   GOOD LUCK!!!!!");
             Console.WriteLine();
             Console.WriteLine("**********************************************");
-            Console.WriteLine();
+            Console.WriteLine("**********************************************");
             Console.WriteLine();
         }
     }
+
     // Take Action and Healing Random number generator section
     interface IPlayerTurn
     {
@@ -75,6 +75,7 @@ namespace week10Assignment
             return playerHealth;
         }
     }
+
     // Names of the players
     class Enemy : Fighter
     {
@@ -109,15 +110,18 @@ namespace week10Assignment
         // Stats on who won more
         public static void Stats(string name, int pw, int ew, int rc)
         {
-            var p = (double)pw / (double)rc;
-            var e = (double)ew / (double)rc;
+            var p = (double)pw / (double)rc-1;
+            var e = (double)ew / (double)rc-1;
             Console.WriteLine(name + ", you won " + pw + " rounds or " + p * 100 + "% of the " + rc + " rounds");
             Console.WriteLine("Your enemy won " + ew + " rounds or " + e * 100 + "% of the " + rc + " rounds");
+            Console.WriteLine();
+            Console.WriteLine();
         }
 
         // Who was the winner
-        public static void Winner(int ph, int eh, string pn, string en, int pw, int ew, int rc)
+        public static void Winner(int ph, int eh, string pn, int pw, int ew, int rc1)
         {
+            int rc = rc1 - 1;
             if (ph <= 0 && eh > 0)
             {
                 Console.WriteLine();
@@ -125,7 +129,7 @@ namespace week10Assignment
                 Console.WriteLine("RIP " + pn + " your dead! Better Luck next time");
                 Console.WriteLine();
                 Console.WriteLine();
-                Stats(pn, pw, ew, (rc - 1));
+                Stats(pn, pw, ew, rc);
             }
             else if (eh <= 0 && ph > 0)
             {
@@ -134,14 +138,14 @@ namespace week10Assignment
                 Console.WriteLine("Congrats " + pn + " your the winner! You defeated your enemy in " + (rc) + " rounds.");
                 Console.WriteLine();
                 Console.WriteLine();
-                Stats(pn, pw, ew, (rc - 1));
+                Stats(pn, pw, ew, rc);
             }
             else
             {
                 Console.WriteLine("DRAW!!! " + pn + " you and the enemy are both died!");
                 Console.WriteLine();
                 Console.WriteLine();
-                Stats(pn, pw, ew, (rc - 1));
+                Stats(pn, pw, ew, rc);
             }
         }
 
@@ -150,7 +154,8 @@ namespace week10Assignment
         { 
             int userInput;
             int playAgain;
-                
+            
+
             Console.WriteLine("WELCOME TO THE COMBAT ARENA!!");
             Console.WriteLine();
             Console.WriteLine("Please enter your name: ");
@@ -158,8 +163,10 @@ namespace week10Assignment
             Fighter p2 = new Fighter("Enemy");
             Attack ap1 = new Attack();
             Attack ap2 = new Attack();
+
             p1.PrintWelcome();
             Rules();
+
             do
             {
                 int roundCounter = 1;
@@ -245,14 +252,15 @@ namespace week10Assignment
                     roundCounter++;
                 } while (playerCurrentHealth > 0 && enemyCurrentHealth > 0);
 
-                Winner(playerCurrentHealth, enemyCurrentHealth, p1.Name, p2.Name, playerWon, enemyWon, roundCounter);
+                Winner(playerCurrentHealth, enemyCurrentHealth, p1.Name, playerWon, enemyWon, roundCounter);
 
                 Console.WriteLine("Would like to play again?");
+                Console.WriteLine();
                 Console.WriteLine();
                 Console.WriteLine("Press 1 to play the game again.");
                 Console.WriteLine("Press any other key to quit playing.");
                 playAgain = Convert.ToInt32(Console.ReadLine());
-            } while (playAgain == 1);
+            }while (playAgain == 1);
             Console.WriteLine();
             Console.WriteLine();
             Console.WriteLine("Thanks for Playing! See you again soon!");
