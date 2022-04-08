@@ -2,10 +2,11 @@
 Program - week10Assignment
 Programer - Toby Cantello
 Date Created - 4/1/2022
-Last Date Updated - 4/6/2022
+Last Date Updated - 4/7/2022
 */
 
 using System;
+using System.Globalization;
 
 namespace week10Assignment
 {
@@ -107,21 +108,11 @@ namespace week10Assignment
             Console.WriteLine();
         }
 
-        // Stats on who won more
-        public static void Stats(string name, int pw, int ew, int rc)
-        {
-            var p = (double)pw / (double)rc-1;
-            var e = (double)ew / (double)rc-1;
-            Console.WriteLine(name + ", you won " + pw + " rounds or " + p * 100 + "% of the " + rc + " rounds");
-            Console.WriteLine("Your enemy won " + ew + " rounds or " + e * 100 + "% of the " + rc + " rounds");
-            Console.WriteLine();
-            Console.WriteLine();
-        }
-
         // Who was the winner
         public static void Winner(int ph, int eh, string pn, int pw, int ew, int rc1)
         {
             int rc = rc1 - 1;
+
             if (ph <= 0 && eh > 0)
             {
                 Console.WriteLine();
@@ -149,23 +140,22 @@ namespace week10Assignment
             }
         }
 
-        // Main Program Below
-        static void Main(string[] args)
-        { 
-            int userInput;
-            int playAgain;
-            
-
-            Console.WriteLine("WELCOME TO THE COMBAT ARENA!!");
+        // Stats on you won the rounds and overall % of rounds won
+        public static void Stats(string name, int pw, int ew, int rc)
+        {
+            var p = (double) pw / (double) rc;
+            var e = (double) ew / (double) rc;
+            Console.WriteLine(name + ", you won " + pw + " rounds or " + p.ToString("P", CultureInfo.InvariantCulture) + " of the " + rc + " rounds");
+            Console.WriteLine("Your enemy won " + ew + " rounds or " + e.ToString("P", CultureInfo.InvariantCulture) + " of the " + rc + " rounds");
             Console.WriteLine();
-            Console.WriteLine("Please enter your name: ");
-            Fighter p1 = new Fighter(Console.ReadLine());
-            Fighter p2 = new Fighter("Enemy");
-            Attack ap1 = new Attack();
-            Attack ap2 = new Attack();
+            Console.WriteLine();
+        }
 
-            p1.PrintWelcome();
-            Rules();
+        // the actual GamePlay 
+        public static void GamePlay(Fighter p1, Fighter p2, Attack ap1, Attack ap2)
+        {
+            int userInput;
+            string playAgain;
 
             do
             {
@@ -180,7 +170,7 @@ namespace week10Assignment
                 {
                     Console.WriteLine();
                     Console.WriteLine("**********************************************");
-                    Console.WriteLine("Round: " + roundCounter);
+                    Console.WriteLine("                 Round: " + roundCounter);
                     Console.WriteLine("**********************************************");
                     Console.WriteLine();
                     Console.WriteLine(p1.Name + ": " + playerCurrentHealth + " health units.");
@@ -198,7 +188,7 @@ namespace week10Assignment
                     }
                     userInput = Convert.ToInt32(Console.ReadLine());
                     if (userInput == 1)
-                    { 
+                    {
                         int pdg = ap1.TakeAction();
                         int edg = ap2.ETakeAction();
                         playerCurrentHealth -= edg;
@@ -259,11 +249,28 @@ namespace week10Assignment
                 Console.WriteLine();
                 Console.WriteLine("Press 1 to play the game again.");
                 Console.WriteLine("Press any other key to quit playing.");
-                playAgain = Convert.ToInt32(Console.ReadLine());
-            }while (playAgain == 1);
+                playAgain = Console.ReadLine();
+            } while (playAgain == "1");
+
             Console.WriteLine();
             Console.WriteLine();
             Console.WriteLine("Thanks for Playing! See you again soon!");
+        }
+
+        // Main Program Below
+        static void Main(string[] args)
+        {
+            Console.WriteLine("WELCOME TO THE COMBAT ARENA!!");
+            Console.WriteLine();
+            Console.WriteLine("Please enter your name: ");
+            Fighter p1 = new Fighter(Console.ReadLine());
+            Fighter p2 = new Fighter("Enemy");
+            Attack ap1 = new Attack();
+            Attack ap2 = new Attack();
+
+            p1.PrintWelcome();
+            Rules();
+            GamePlay(p1, p2, ap1, ap2); 
         }
     }
 }
